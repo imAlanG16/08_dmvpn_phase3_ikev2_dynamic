@@ -1,0 +1,287 @@
+###HUB###
+
+enable
+configure terminal
+
+hostname HUB-P3
+no ip domain-lookup
+ip cef
+
+interface Ethernet0/0
+ description WAN-HACIA-ISP
+ ip address 1.1.1.1 255.255.255.0
+ no shutdown
+
+interface Ethernet0/1
+ description LAN-HUB
+ ip address 14.3.10.1 255.255.255.0
+ no shutdown
+
+ip route 0.0.0.0 0.0.0.0 1.1.1.254
+
+ip dhcp excluded-address 14.3.10.1 14.3.10.20
+
+ip dhcp pool LAN-HUB
+ network 14.3.10.0 255.255.255.0
+ default-router 14.3.10.1
+ dns-server 8.8.8.8 1.1.1.1
+ domain-name dmvpn.local
+
+crypto ikev2 proposal IKEV2-PROP
+ encryption aes-cbc-256
+ integrity sha256
+ group 14
+
+crypto ikev2 policy IKEV2-POL
+ proposal IKEV2-PROP
+
+crypto ikev2 keyring IKEV2-KEYRING
+ peer ANY-SPOKE
+  address 0.0.0.0 0.0.0.0
+  pre-shared-key DMVPN456
+
+crypto ikev2 profile IKEV2-PROFILE
+ match identity remote address 0.0.0.0 0.0.0.0
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local IKEV2-KEYRING
+
+crypto ipsec transform-set TS-DMVPN-IKEV2 esp-aes 256 esp-sha256-hmac
+ mode transport
+
+crypto ipsec profile PROF-DMVPN-IKEV2
+ set transform-set TS-DMVPN-IKEV2
+ set ikev2-profile IKEV2-PROFILE
+
+interface Tunnel10
+ description DMVPN-FASE3-HUB-IKEV2-OSPF
+ ip address 10.10.10.1 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ ip nhrp authentication DMVPNKEY
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 200
+ ip nhrp redirect
+ tunnel source Ethernet0/0
+ tunnel mode gre multipoint
+ tunnel key 200
+ tunnel protection ipsec profile PROF-DMVPN-IKEV2
+ ip ospf network broadcast
+ ip ospf priority 255
+ no shutdown
+
+router ospf 20
+ router-id 1.1.1.1
+ network 10.10.10.0 0.0.0.255 area 0
+ network 14.3.10.0 0.0.0.255 area 0
+
+end
+write memory
+############
+
+###SPOKE 1###
+
+enable
+configure terminal
+
+hostname SPOKE1-P3
+no ip domain-lookup
+ip cef
+
+interface Ethernet0/0
+ description WAN-HACIA-ISP
+ ip address 2.2.2.1 255.255.255.0
+ no shutdown
+
+interface Ethernet0/1
+ description LAN-SPOKE1
+ ip address 14.3.20.1 255.255.255.0
+ no shutdown
+
+ip route 0.0.0.0 0.0.0.0 2.2.2.254
+
+ip dhcp excluded-address 14.3.20.1 14.3.20.20
+
+ip dhcp pool LAN-SPOKE1
+ network 14.3.20.0 255.255.255.0
+ default-router 14.3.20.1
+ dns-server 8.8.8.8 1.1.1.1
+ domain-name dmvpn.local
+
+crypto ikev2 proposal IKEV2-PROP
+ encryption aes-cbc-256
+ integrity sha256
+ group 14
+
+crypto ikev2 policy IKEV2-POL
+ proposal IKEV2-PROP
+
+crypto ikev2 keyring IKEV2-KEYRING
+ peer DMVPN-NODE
+  address 0.0.0.0 0.0.0.0
+  pre-shared-key local DMVPN456
+  pre-shared-key remote DMVPN456
+
+crypto ikev2 profile IKEV2-PROFILE
+ match identity remote address 0.0.0.0 0.0.0.0
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local IKEV2-KEYRING
+
+crypto ipsec transform-set TS-DMVPN-IKEV2 esp-aes 256 esp-sha256-hmac
+ mode transport
+
+crypto ipsec profile PROF-DMVPN-IKEV2
+ set transform-set TS-DMVPN-IKEV2
+ set ikev2-profile IKEV2-PROFILE
+
+interface Tunnel10
+ description DMVPN-FASE3-SPOKE1-IKEV2-OSPF
+ ip address 10.10.10.2 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ ip nhrp authentication DMVPNKEY
+ ip nhrp map 10.10.10.1 1.1.1.1
+ ip nhrp map multicast 1.1.1.1
+ ip nhrp nhs 10.10.10.1
+ ip nhrp network-id 200
+ ip nhrp shortcut
+ tunnel source Ethernet0/0
+ tunnel mode gre multipoint
+ tunnel key 200
+ tunnel protection ipsec profile PROF-DMVPN-IKEV2
+ ip ospf network broadcast
+ ip ospf priority 0
+ no shutdown
+
+router ospf 20
+ router-id 2.2.2.2
+ network 10.10.10.0 0.0.0.255 area 0
+ network 14.3.20.0 0.0.0.255 area 0
+
+end
+write memory
+############
+
+###SPOKE 2###
+enable
+configure terminal
+
+hostname SPOKE2-P3
+no ip domain-lookup
+ip cef
+
+interface Ethernet0/0
+ description WAN-HACIA-ISP
+ ip address 3.3.3.1 255.255.255.0
+ no shutdown
+
+interface Ethernet0/1
+ description LAN-SPOKE2
+ ip address 14.3.30.1 255.255.255.0
+ no shutdown
+
+ip route 0.0.0.0 0.0.0.0 3.3.3.254
+
+ip dhcp excluded-address 14.3.30.1 14.3.30.20
+
+ip dhcp pool LAN-SPOKE2
+ network 14.3.30.0 255.255.255.0
+ default-router 14.3.30.1
+ dns-server 8.8.8.8 1.1.1.1
+ domain-name dmvpn.local
+
+crypto ikev2 proposal IKEV2-PROP
+ encryption aes-cbc-256
+ integrity sha256
+ group 14
+
+crypto ikev2 policy IKEV2-POL
+ proposal IKEV2-PROP
+
+crypto ikev2 keyring IKEV2-KEYRING
+ peer DMVPN-NODE
+  address 0.0.0.0 0.0.0.0
+  pre-shared-key local DMVPN456
+  pre-shared-key remote DMVPN456
+
+crypto ikev2 profile IKEV2-PROFILE
+ match identity remote address 0.0.0.0 0.0.0.0
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local IKEV2-KEYRING
+
+crypto ipsec transform-set TS-DMVPN-IKEV2 esp-aes 256 esp-sha256-hmac
+ mode transport
+
+crypto ipsec profile PROF-DMVPN-IKEV2
+ set transform-set TS-DMVPN-IKEV2
+ set ikev2-profile IKEV2-PROFILE
+
+interface Tunnel10
+ description DMVPN-FASE3-SPOKE2-IKEV2-OSPF
+ ip address 10.10.10.3 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ ip nhrp authentication DMVPNKEY
+ ip nhrp map 10.10.10.1 1.1.1.1
+ ip nhrp map multicast 1.1.1.1
+ ip nhrp nhs 10.10.10.1
+ ip nhrp network-id 200
+ ip nhrp shortcut
+ tunnel source Ethernet0/0
+ tunnel mode gre multipoint
+ tunnel key 200
+ tunnel protection ipsec profile PROF-DMVPN-IKEV2
+ ip ospf network broadcast
+ ip ospf priority 0
+ no shutdown
+
+router ospf 20
+ router-id 3.3.3.3
+ network 10.10.10.0 0.0.0.255 area 0
+ network 14.3.30.0 0.0.0.255 area 0
+
+end
+write memory
+############
+
+###ISP###
+
+enable
+configure terminal
+
+hostname ISP
+no ip domain-lookup
+ip cef
+
+interface Ethernet0/0
+ description HACIA-HUB
+ ip address 1.1.1.254 255.255.255.0
+ no shutdown
+
+interface Ethernet0/1
+ description HACIA-SPOKE1
+ ip address 2.2.2.254 255.255.255.0
+ no shutdown
+
+interface Ethernet0/2
+ description HACIA-SPOKE2
+ ip address 3.3.3.254 255.255.255.0
+ no shutdown
+
+end
+write memory
+#############
+
+###VERIFICACION###
+
+show dmvpn
+show crypto ikev2 sa
+show crypto ipsec sa
+show ip route ospf
+ping 14.3.30.1 source 14.3.20.1
+###############################
