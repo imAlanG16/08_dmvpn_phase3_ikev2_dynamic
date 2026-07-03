@@ -1,33 +1,3 @@
-<style>
-/* Evitar orfandad de títulos al exportar a PDF */
-h1, h2, h3, h4, h5, h6 {
-  page-break-after: avoid !important;
-  break-after: avoid !important;
-}
-
-/* Evitar que los bloques de artículos se corten entre páginas */
-.article-block {
-  display: block !important;
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-/* Evitar que imágenes, tablas, código, párrafos, listas y citas se dividan */
-img, table, pre, p, li, tr, blockquote, figure, div[style*="text-align: center"] {
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-/* Asegurar que el body no interfiera con los saltos de página en la impresión */
-@media print {
-  body {
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-}
-</style>
-
 <div style="text-align: center; padding-top: 50px; font-family: 'Outfit', sans-serif;">
 
 <h1>Instituto Tecnológico de Las Américas (ITLA)</h1>
@@ -43,8 +13,6 @@ img, table, pre, p, li, tr, blockquote, figure, div[style*="text-align: center"]
 <strong>Docente:</strong> Jonathan Esteban Rondon Corniel<br>
 <strong>Fecha de Entrega:</strong> 2 de julio de 2026<br>
 <strong>Video de Exposición:</strong> <a href="https://youtu.be/hoGJjk126xM">https://youtu.be/hoGJjk126xM</a>
-</div>
-</div>
 
 ## Objetivo de la VPN
 Implementar una red DMVPN (Dynamic Multipoint VPN) de Fase 3, utilizando el protocolo moderno de negociación IKEv2 para asegurar los túneles e incorporando el protocolo OSPF como mecanismo de enrutamiento dinámico corporativo. El objetivo primordial de la Fase 3 es superar las limitaciones de direccionamiento de la Fase 2 mediante la introducción de la optimización del enrutamiento lógicos a nivel de NHRP. Esto se logra permitiendo la sumarización de rutas en el Hub y reescribiendo la tabla de rutas en caliente mediante redirecciones y atajos dinámicos de atajo (`shortcut`), lo cual permite la comunicación Spoke-to-Spoke en un solo salto sin requerir complejas configuraciones de preservación de Next Hop en OSPF.
@@ -55,7 +23,6 @@ La topología lógica conecta de forma multipunto los dispositivos sucursales me
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/topologia_dmvpn.png" width="480" alt="Topología de Red DMVPN GNS3">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Topología física del laboratorio DMVPN en GNS3</p>
-</div>
 
 El direccionamiento configurado para las interfaces físicas y lógicas del escenario es:
 
@@ -69,7 +36,7 @@ El direccionamiento configurado para las interfaces físicas y lógicas del esce
 
 
 
-<div style="page-break-after: always; break-after: page; display: block; height: 1px; overflow: hidden;"></div>
+<div style="page-break-after: always; break-after: page; display: block; height: 1px; overflow: hidden;">
 
 ## Parámetros Criptográficos y de Red
 Los parámetros configurados para la seguridad IPSec IKEv2 y el enrutamiento dinámico en Fase 3 son:
@@ -85,7 +52,7 @@ Los parámetros configurados para la seguridad IPSec IKEv2 y el enrutamiento din
 | **Fase 3 NHRP** | Control de Cliente | `ip nhrp shortcut` en Spokes | Permite a Spokes reescribir atajos en la tabla de rutas. |
 
 
-<div style="page-break-after: always; break-after: page; display: block; height: 1px; overflow: hidden;"></div>
+<div style="page-break-after: always; break-after: page; display: block; height: 1px; overflow: hidden;">
 
 ## Explicación de la Configuración de Fase 3
 A diferencia de la Fase 2, en la Fase 3 de DMVPN se resuelven las limitaciones de la tabla de enrutamiento al introducir dos comandos claves a nivel de NHRP:
@@ -98,8 +65,6 @@ Los scripts detallados aplicados se encuentran en: [script_configuracion.txt](re
 
 ## Verificación de Funcionamiento
 
-<div class="article-block">
-
 ### 1. Registro de Clientes NHRP en el Next Hop Server (HUB)
 Para comprobar que los enrutadores sucursales (Spokes) se encuentran registrados dinámicamente en el concentrador corporativo, se ejecuta el comando `show dmvpn` en el router `HUB-P3`. La salida confirma el registro exitoso de los **2 peers remotos** (`NHRP Peers: 2`).
 
@@ -110,11 +75,6 @@ El Hub documenta que ambos extremos del túnel mGRE de la Fase 3 se encuentran e
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/show_dmvpn.png" width="480" alt="Registro de Spokes en el HUB Fase 3">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Salida de show dmvpn en el HUB-P3 demostrando a ambos clientes multiplexados activos</p>
-</div>
-
-</div>
-
-<div class="article-block">
 
 ### 2. Tabla NHRP en Spokes con Atajos y Redireccionamiento Dinámico (Fase 3)
 La base de datos NHRP se verifica con el comando `show ip nhrp` en `SPOKE1-P3` después de iniciar la transmisión de datos hacia Spoke 2. La salida revela el mecanismo nativo de la Fase 3:
@@ -125,11 +85,6 @@ La base de datos NHRP se verifica con el comando `show ip nhrp` en `SPOKE1-P3` d
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/show_ip_nhrp.png" width="480" alt="Tabla NHRP en SPOKE1-P3 mostrando atajo">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Detalles de show ip nhrp en SPOKE1-P3 documentando la resolución de atajo H para la subred remota</p>
-</div>
-
-</div>
-
-<div class="article-block">
 
 ### 3. Estado de la Sesión IKEv2 SA (Fase 1)
 La comprobación de la Fase 1 bajo IKEv2 se ejecuta con el comando `show crypto ikev2 sa` en `SPOKE1-P3`. La salida de consola ratifica que se ha negociado exitosamente una sesión criptográfica robusta hacia el peer remoto del Hub `1.1.1.1` desde la dirección local `2.2.2.1`. 
@@ -139,11 +94,6 @@ La SA está en el estado estable **`READY`**, y reporta los algoritmos configura
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/crypto_ikev2_sa.png" width="480" alt="Asociación IKEv2 SA activa en SPOKE1-P3">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Estado IKEv2 SA en SPOKE1-P3 confirmando la sesión de control activa hacia el HUB</p>
-</div>
-
-</div>
-
-<div class="article-block">
 
 ### 4. Asociación de Seguridad IPSec en el Túnel Multipunto (Fase 2)
 Al ejecutar el comando `show crypto ipsec sa` en `SPOKE1-P3`, se verifica el cifrado de datos de la interfaz Tunnel10 protegida por el perfil multipunto. La SA de datos se asocia hacia el peer público del Hub `1.1.1.1`:
@@ -157,11 +107,6 @@ Los contadores confirman un tránsito masivo de paquetes cifrados sin pérdidas:
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/crypto_ipsec_sa.png" width="480" alt="Detalles de show crypto ipsec sa en SPOKE1-P3">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Estadísticas de la SA IPSec de Tunnel10 en SPOKE1-P3 procesando paquetes cifrados</p>
-</div>
-
-</div>
-
-<div class="article-block">
 
 ### 5. Prueba de Conectividad y Trazado de Ruta Directo (NHRP Redirect en Fase 3)
 La validación definitiva se realiza en la terminal del host VPCS corporativo detrás de Spoke 1 (LAN `14.3.20.0/24`). Al ejecutar `ping 14.3.30.21` hacia la IP del host en la LAN de Spoke 2, se obtiene respuesta inmediata con **0% de pérdida**.
@@ -175,5 +120,3 @@ Posteriormente, al ejecutar `tracer 14.3.30.21`, se comprueba experimentalmente 
 <div style="text-align: center; margin: 10px 0;">
   <img src="images/ping_spoke_to_spoke.png" width="480" alt="Ping y traceroute exitosos en DMVPN Fase 3">
   <p style="font-size: 0.9em; color: #666; font-style: italic;">Prueba de conectividad en VPCS confirmando la resolución y el salto dinámico a través de 10.10.10.3</p>
-</div>
-</div>
