@@ -42,7 +42,8 @@ img, table, pre, p, li, tr, blockquote, figure, div[style*="text-align: center"]
 <strong>Asignatura:</strong> Seguridad de Redes<br>
 <strong>Docente:</strong> Jonathan Esteban Rondon Corniel<br>
 <strong>Fecha de Entrega:</strong> 2 de julio de 2026<br>
-<strong>Video de Exposición:</strong> <a href="https://youtu.be/hoGJjk126xM">https://youtu.be/hoGJjk126xM</a>
+<strong>Video de Exposición:</strong> <a href="https://youtu.be/hoGJjk126xM">https://youtu.be/hoGJjk126xM</a><br>
+<strong>Repositorio de GitHub:</strong> <a href="https://github.com/imAlanG16/08_dmvpn_phase3_ikev2_dynamic">https://github.com/imAlanG16/08_dmvpn_phase3_ikev2_dynamic</a>
 </div>
 </div>
 
